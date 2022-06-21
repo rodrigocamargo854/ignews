@@ -18,17 +18,14 @@
 
 ## Sobre o projeto
 
-O projeto tem como objetivo o estudo e desenvolvimento de uma aplicação em ReactJS com NextJS para listagem de posts e sistema de inscrição(subscription).
+This project has been created for development inprovmented using the following steps and hands on a real ReactJs with NextJs application with externals API's and all new atibuttes NextJs offers  to clients subscriptions and clients payment methods.  
 
-A aplicação foi desenvolvida utilizando o framework NextJS aplicando conceitos como consumo de API externas, API Root, Server Side Rendering (SSR), Static Site Generation (SSG), STRIPE para pagamentos das subscriptions, NextAuth para autenticação com Github, FaunaDB para armazenar as informações do usuário em um banco de dados e Prismic CMS para adição e gerenciamento do conteúdo dos posts.
 
-O projeto foi desenvolvido como pratica das aulas do modulo 03 do [Ignite da Rocketseat](https://rocketseat.com.br/)
+This project has been part of Rocketseat module 3 Bootcamp  [Ignite da Rocketseat](https://rocketseat.com.br/)
 
 ---
 
-## Tecnologias
-
-Abaixo as tecnologias utilizadas para construção da aplicação
+## Main Technologies
 
 - [ReactJS](https://reactjs.org/)
 - [NextJS](https://nextjs.org/)
@@ -41,23 +38,21 @@ Abaixo as tecnologias utilizadas para construção da aplicação
 
 ---
 
-## Configurações necessárias
+## Configurations
 
-### **Requisitos**
-
-Necessário realizar as instalações:
+You have to ...
 
 - [Git](https://git-scm.com/)
 - [Yarn](https://classic.yarnpkg.com)
 - [Stripe CLI](https://stripe.com/docs/stripe-cli)
 
-Criar conta e configurar os serviços externos:
+You have to create and maybe configurate...
 
 - [Stripe](https://stripe.com/)
 - [FaunaDB](https://fauna.com/)
 - [Prismic CMS](https://prismic.io/)
 
-*Configurações dos serviços estão localizadas no arquivo servicesConfig.md na raiz do projeto.*
+*servicesConfig.md on project root.*
 
 ### **Clone do projeto**
 
