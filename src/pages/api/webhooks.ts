@@ -1,43 +1,91 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { Readable } from "stream";
-import { Stripe } from "stripe";
+import { NextApiRequest, NextApiResponse } from 'next';
+import { Readable } from 'stream'
+import Stripe from 'stripe';
+
+import { stripe } from '../../services/stripe';
+import { saveSubscription } from '../../_lib/manageSubscription';
 
 async function buffer(readable: Readable) {
   const chunks = [];
 
   for await (const chunk of readable) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+    chunks.push(
+      typeof chunk === 'string' ? Buffer.from(chunk) : chunk
+    )
   }
 
-  return Buffer.concat(chunks);
+  return Buffer.concat(chunks)
 }
 
 export const config = {
   api: {
-    bodyPArser: false,
-  },
-};
+    bodyParser: false,
+  }
+}
+
+const relevantEvents = new Set([
+  'checkout.session.completed',
+  'customer.subscription.updated',
+  'customer.subscription.deleted',
+])
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  if (req.method === "POST") {
-    const buf = await buffer(req);
-    const secret = req.headers["stripe-signature"];
+  if (req.method === 'POST') {
+    const buf = await buffer(req)
+
+    const secret = req.headers['stripe-signature']
 
     let event: Stripe.Event;
 
     try {
-      event = Stripe.webhooks.constructEvent(
-        buf,
-        secret,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-    } catch (e) {
-      return res.status(400).send(`webhook error:${e.message}`);
+      event = stripe.webhooks.constructEvent(
+        buf, secret, process.env.STRIPE_WEBHOOK_SECRET
+      )
+    } catch (err) {
+      console.error(err.message)
+      return res.status(400).send(`Webhook error: ${err.message}`)
     }
 
-    res.status(200).json({ ok: true });
+    const { type } = event;
+
+    if ( relevantEvents.has(type) ) {
+      console.log(event)
+      try {
+
+        //instead of use if and else
+        switch (type) {
+          case 'checkout.session.completed':
+            const checkoutSession = event.data.object as Stripe.Checkout.Session
+
+            await saveSubscription(
+              checkoutSession.subscription.toString(),
+              checkoutSession.customer.toString(),
+              true,
+            )
+            break
+          case 'customer.subscription.updated':
+          case 'customer.subscription.deleted':
+            const subscription = event.data.object as Stripe.Subscription
+            
+            await saveSubscription(
+              subscription.id,
+              subscription.customer.toString(),
+              false,
+            )
+
+            break
+          default:
+            throw new Error('Unhandled event.')
+        }
+      } catch (err) {
+        console.error(err)
+        return res.status(500).json({ error: 'Webhook handler failed.'})
+      }
+    }
+
+    res.json({ received: true })
   } else {
-    res.setHeader("Allow", "POST");
-    res.status(405).end("Method not allowed");
+    res.setHeader('Allow', 'POST')
+    res.status(405).end('Method not allowed')
   }
-};
+}
