@@ -2,7 +2,7 @@ import { GetStaticProps } from "next";
 import Link from "next/link";
 import Head from "next/head";
 
-import { getPrismicClient } from "../../services/prismic";
+import { getPrismicClient, PrismicPredicates } from "../../services/prismic";
 
 import { RichText } from "prismic-dom";
 
@@ -43,13 +43,16 @@ export default function Posts({ posts }: PostsProps) {
   );
 }
 
+//here we use api colect to send up
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
 
-  const response = await prismic.getByType("document-type", "publication", {
-    fetch: ["publication.title", "publication.content"],
+  const response = await prismic.query<Post>([
+    PrismicPredicates.at('document.type', 'publication'),
+  ], {
+    fetch: ['post.title', 'post.content'],
     pageSize: 100,
-  });
+  })
 
   const posts = response.results.map((post) => {
     return {
