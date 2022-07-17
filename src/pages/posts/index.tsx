@@ -30,7 +30,7 @@ export default function Posts({ posts }: PostsProps) {
         <div className={styles.posts}>
           {posts.map((post) => (
             <Link href={`/posts/${post.slug}`}>
-              <a href="#" key={post.slug}>
+              <a key={post.slug}>
                 <time> {post.updatedAt} </time>
                 <strong> {post.title} </strong>
                 <p> {post.excerpt} </p>
@@ -50,7 +50,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const response = await prismic.query<Post>([
     PrismicPredicates.at('document.type', 'publication'),
   ], {
-    fetch: ['post.title', 'post.content'],
+    fetch: ['publication.title', 'publication.content'],
     pageSize: 100,
   })
 
