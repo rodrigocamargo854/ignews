@@ -16,7 +16,7 @@ export function SubscribeButton() {
       signIn('github')
       return;
     }
-
+//user redirecting
     if (session?.activeSubscription) {
       router.push('/posts')
       return
